@@ -22,6 +22,6 @@ export default class Log {
   @Column({ type: 'varchar', nullable: true })
   description?: string
 
-  @Column({ type: 'date', nullable: false })
+  @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   date: Date
 }

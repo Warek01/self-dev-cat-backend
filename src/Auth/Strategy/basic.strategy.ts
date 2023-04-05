@@ -11,16 +11,16 @@ export class BasicStrategy extends PassportStrategy(BasicPassportStrategy) {
     super({
       session: false,
       passwordField: 'password',
-      usernameField: 'email',
+      usernameField: 'username',
       passReqToCallback: false,
     })
   }
 
   async validate(
-    email: string,
+    username: string,
     password: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = await this._authService.validateUser(email, password)
+    const user = await this._authService.validateUser(username, password)
 
     if (!user) {
       throw new UnauthorizedException()

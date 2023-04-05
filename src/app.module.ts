@@ -3,11 +3,12 @@ import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { AppController } from './app.controller'
-import { UserModule } from '@/User/user.module';
-import { EncryptionModule } from '@/Encryption/encryption.module';
-import { LogModule } from '@/Log/log.module';
-import { Log, UsefulResource, User } from "@/Entities";
-import { AuthModule } from '@/Auth/auth.module';
+import { UserModule } from '@/User/user.module'
+import { EncryptionModule } from '@/Encryption/encryption.module'
+import { LogModule } from '@/Log/log.module'
+import { Log, UsefulResource, User } from '@/Entities'
+import { AuthModule } from '@/Auth/auth.module'
+import { BlogModule } from '@/Blog/blog.module'
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AuthModule } from '@/Auth/auth.module';
     UserModule,
     EncryptionModule,
     AuthModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -27,16 +27,16 @@ export default class Blog {
   references?: BlogReference[]
 
   @Column({
-    type: 'datetime',
+    type: 'timestamp',
     nullable: false,
-    default: () => new Date(),
+    default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date
 
   @Column({
-    type: 'datetime',
+    type: 'timestamp',
     nullable: false,
-    default: () => new Date(),
+    default: () => 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date
 

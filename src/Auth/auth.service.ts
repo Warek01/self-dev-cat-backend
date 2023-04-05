@@ -12,15 +12,12 @@ export class AuthService {
   ) {}
 
   public async validateUser(
-    email: string,
+    username: string,
     password: string,
   ): Promise<Omit<User, 'password'> | null> {
-    const user = await this._userService.findOneByEmail(email)
+    const user = await this._userService.findOneByUsername(username)
 
-    if (
-      user &&
-      (await this._encryptionService.compare(password, user.password))
-    ) {
+    if (user && (await this._encryptionService.compare(password, user.password))) {
       const { password, ...result } = user
       return result
     }

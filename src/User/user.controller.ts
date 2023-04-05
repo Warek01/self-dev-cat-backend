@@ -1,12 +1,16 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
   HttpStatus,
+  NotImplementedException,
+  Patch,
   Post,
   Req,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common'
 import { object, string, ValidationError } from 'yup'
@@ -47,6 +51,76 @@ export class UserController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async getUserData(@Req() req: RequestWithUser): Promise<User | null> {
-    return await this._userService.findOneByEmail(req.user.email)
+    try {
+      return await this._userService.findOneByEmail(req.user.email)
+    } catch {
+      throw new NotFoundException()
+    }
+  }
+
+  @Delete()
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Req() req: RequestWithUser): Promise<void> {
+    await this._userService.delete(req.user.email)
+  }
+
+  @Patch('password')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changePassword(
+    @Req() req: RequestWithUser,
+    @Body() body: { password: string },
+  ): Promise<void> {
+    try {
+      await this._userService.changePassword(req.user.email, body.password)
+    } catch {
+      throw new HttpException('Not modified', HttpStatus.NOT_MODIFIED)
+    }
+  }
+
+  @Patch('real-name')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeRealName(
+    @Req() req: RequestWithUser,
+    @Body() body: { name: string },
+  ): Promise<void> {
+    try {
+      await this._userService.changeRealName(req.user.email, body.name)
+    } catch {
+      throw new HttpException('Not modified', HttpStatus.NOT_MODIFIED)
+    }
+  }
+
+  @Patch('username')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeUsername(
+    @Req() req: RequestWithUser,
+    @Body() body: { username: string },
+  ): Promise<void> {
+    try {
+      await this._userService.changeUsername(req.user.email, body.username)
+    } catch {
+      throw new HttpException('Not modified', HttpStatus.NOT_MODIFIED)
+    }
+  }
+
+  @Patch('add-friend')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async addFriend(
+    @Req() req: RequestWithUser,
+    @Body() body: { to: string },
+  ): Promise<void> {
+    await this._userService.addFriend(req.user.username, body.to)
+  }
+
+  @Patch('remove-friend')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeFriend(): Promise<void> {
+    throw new NotImplementedException()
   }
 }
