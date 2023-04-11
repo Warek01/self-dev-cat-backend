@@ -1,15 +1,9 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+
 import { User } from '@/Entities'
 
 @Entity()
-export default class FriendRequest {
+export class FriendRequest {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 
@@ -17,11 +11,11 @@ export default class FriendRequest {
   date: Date
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
-  from: Relation<User>
+  from: User
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
-  to: Relation<User>
+  to: User
 
-  @Column({ type: 'bool', default: false })
-  accepted: boolean
+  @Column({ type: 'varchar', default: 'pending', nullable: false })
+  status: 'accepted' | 'rejected' | 'pending'
 }

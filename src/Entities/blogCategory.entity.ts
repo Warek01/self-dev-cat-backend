@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, Relation } from 'typeorm'
-import Blog from '@/Entities/Blog'
+
+import { Blog } from '@/Entities/blog.entity'
 
 @Entity()
-export default class BlogCategory {
+export class BlogCategory {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 
@@ -13,5 +14,5 @@ export default class BlogCategory {
   title: string
 
   @ManyToMany(() => Blog, (blog) => blog.categories)
-  blogs: Relation<Blog[]>
+  blogs: Blog[]
 }

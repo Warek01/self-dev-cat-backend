@@ -12,15 +12,18 @@ import {
   Req,
   NotFoundException,
   UseGuards,
+  Inject,
+  forwardRef,
 } from '@nestjs/common'
 import { object, string, ValidationError } from 'yup'
 
-import UserService from '@/User/user.service'
+import type { JwtResponse } from '@/Types/Jwt'
+import type { RequestWithUser } from '@/Types/RequestWithUser'
+import type { UserCreateData } from '@/User/user.types'
 import { User } from '@/Entities'
-import { UserCreateData } from '@/User/user.types'
 import { AuthService } from '@/Auth/auth.service'
 import { BasicAuthGuard } from '@/Auth/Guard/basic-auth.guard'
-import RequestWithUser from '@/Types/RequestWithUser'
+import { UserService } from '@/User/user.service'
 
 @Controller('user')
 export class UserController {
@@ -30,14 +33,19 @@ export class UserController {
     password: string().required().min(5).max(255),
   })
 
-  constructor(private _userService: UserService, private _authService: AuthService) {}
+  constructor(
+    @Inject(forwardRef(() => UserService))
+    private _userService: UserService,
+    @Inject(forwardRef(() => AuthService))
+    private _authService: AuthService,
+  ) {}
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async postUser(@Body() createData: UserCreateData): Promise<User> {
     try {
       const userData = await UserController._userCreateSchema.validate(createData)
-      return await this._userService.create(createData)
+      return await this._userService.create(userData)
     } catch (err) {
       if (err instanceof ValidationError) {
         throw new HttpException(err.message, HttpStatus.NOT_ACCEPTABLE)
@@ -122,5 +130,12 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeFriend(): Promise<void> {
     throw new NotImplementedException()
+  }
+
+  @Get('login')
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async login(@Req() req: RequestWithUser): Promise<JwtResponse> {
+    return this._authService.login(req.user)
   }
 }

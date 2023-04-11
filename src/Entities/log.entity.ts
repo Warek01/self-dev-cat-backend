@@ -1,9 +1,9 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 
-import User from '@/Entities/User/User'
+import { User } from '@/Entities'
 
 @Entity()
-export default class Log {
+export class Log {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 

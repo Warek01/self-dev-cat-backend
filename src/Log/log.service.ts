@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 
-import { Log } from '@/Entities'
+import { Log, User } from '@/Entities'
 
 @Injectable()
 export class LogService {
@@ -62,6 +62,20 @@ export class LogService {
       log.date = date
       log.type = 'delete_user'
       log.description = `${username} send friend request to ${friendUsername}.`
+
+      await this._logRepo.save(log)
+    },
+  }
+
+  public auth = {
+    login: async (user: User, date: Date = new Date()): Promise<void> => {
+      const log = await this._logRepo.create()
+
+      log.date = date
+      log.type = 'login'
+      log.description = `${user.username} logged in`
+      log.user = user
+      log.username = user.username
 
       await this._logRepo.save(log)
     },

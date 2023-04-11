@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, Relation, ManyToOne } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Relation } from 'typeorm'
 
-import User from '@/Entities/User/User'
+import { User } from '@/Entities'
 
 @Entity()
-export default class UsefulResource {
+export class UsefulResource {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 
@@ -19,6 +19,9 @@ export default class UsefulResource {
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: true })
-  user: Relation<User>
+  @ManyToOne(() => User, (user) => user.usefulResources, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  user: User
 }

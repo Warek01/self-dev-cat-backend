@@ -1,17 +1,9 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm'
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-import UsefulResource from '@/Entities/UsefulResource'
-import FriendRequest from '@/Entities/FriendRequest'
+import { UsefulResource, FriendRequest } from '@/Entities'
 
 @Entity()
-export default class User {
+export class User {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 
@@ -36,11 +28,11 @@ export default class User {
   @OneToMany(() => UsefulResource, (usefulResource) => usefulResource.user, {
     nullable: true,
   })
-  usefulResources: Relation<UsefulResource>
+  usefulResources: UsefulResource
 
   @OneToMany(() => FriendRequest, (req) => req.from, { nullable: true })
-  friendRequests: Relation<FriendRequest[]>
+  friendRequests: FriendRequest[]
 
   @ManyToMany(() => User, (user) => user.friends, { nullable: true })
-  friends: Relation<User[]>
+  friends: User[]
 }

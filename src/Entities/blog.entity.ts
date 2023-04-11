@@ -5,15 +5,12 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
 } from 'typeorm'
 
-import { BlogReference } from '@/Entities/Blog/interface'
-import { User } from '@/Entities'
-import BlogCategory from '@/Entities/BlogCategory'
+import { User, BlogCategory } from '@/Entities'
 
 @Entity()
-export default class Blog {
+export class Blog {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number
 
@@ -24,7 +21,10 @@ export default class Blog {
     type: 'simple-json',
     nullable: true,
   })
-  references?: BlogReference[]
+  references?: {
+    href: string
+    text: string
+  }[]
 
   @Column({
     type: 'timestamp',
@@ -41,11 +41,11 @@ export default class Blog {
   updatedAt: Date
 
   @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
-  user: Relation<User>
+  user: User
 
   @ManyToMany(() => BlogCategory, (category) => category.blogs, { onDelete: 'SET NULL' })
   @JoinTable()
-  categories: Relation<BlogCategory[]>
+  categories: BlogCategory[]
 
   @Column({ type: 'varchar', nullable: false })
   slug: string

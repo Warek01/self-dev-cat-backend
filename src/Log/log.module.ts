@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { LogService } from './log.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
 import { Log } from '@/Entities'
 
+@Global()
 @Module({
   imports: [TypeOrmModule.forFeature([Log])],
   providers: [LogService],

@@ -6,9 +6,9 @@ import { AppController } from './app.controller'
 import { UserModule } from '@/User/user.module'
 import { EncryptionModule } from '@/Encryption/encryption.module'
 import { LogModule } from '@/Log/log.module'
-import { Log, UsefulResource, User } from '@/Entities'
 import { AuthModule } from '@/Auth/auth.module'
 import { BlogModule } from '@/Blog/blog.module'
+import { Blog, BlogCategory, FriendRequest, Log, UsefulResource, User } from "@/Entities";
 
 @Module({
   imports: [
@@ -32,8 +32,16 @@ import { BlogModule } from '@/Blog/blog.module'
       applicationName: 'self-dev-cat-backend',
       auto_reconnect: true,
       relationLoadStrategy: 'join',
+      autoSave: false,
+      autoReconnect: true,
+      logger: process.env.NODE_ENV === 'debug' ? 'debug' : 'simple-console',
+      uuidExtension: 'pgcrypto',
+      version: 1,
+      useUTC: false,
+      encrypt: false,
+      forceServerObjectId: false,
+      entities: [User, Log, UsefulResource, FriendRequest, Blog, BlogCategory],
     }),
-    TypeOrmModule.forFeature([UsefulResource, User, Log]),
     LogModule,
     UserModule,
     EncryptionModule,

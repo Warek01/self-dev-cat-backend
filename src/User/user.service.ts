@@ -1,21 +1,29 @@
-import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common'
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { string } from 'yup'
 
-import type { UserCreateData } from './user.types'
-import { User } from '@/Entities'
+import type { UserCreateData } from '@/User/user.types'
+import { FriendRequest, User } from '@/Entities'
 import { EncryptionService } from '@/Encryption/encryption.service'
 import { LogService } from '@/Log/log.service'
-import FriendRequest from '@/Entities/FriendRequest'
 
 @Injectable()
-export default class UserService {
+export class UserService {
   constructor(
     @InjectRepository(User) private _userRepo: Repository<User>,
     @InjectRepository(FriendRequest)
     private _friendRequestRepo: Repository<FriendRequest>,
+    @Inject(forwardRef(() => EncryptionService))
     private _encryptionService: EncryptionService,
+    @Inject(forwardRef(() => LogService))
     private _logService: LogService,
   ) {}
 
@@ -127,12 +135,24 @@ export default class UserService {
       throw new NotFoundException(`User ${friendUsername} not found`)
     }
 
+    const existingRequest = await this._friendRequestRepo
+      .createQueryBuilder('req')
+      .where('req."fromId" = :userId', { userId: user.id })
+      .andWhere('req."toId" = :friendId', { friendId: friend.id })
+      .andWhere("req.status IN ('pending', 'accepted')")
+      .getOne()
+
+    if (existingRequest) {
+      throw new ConflictException('Friend request already sent')
+    }
+
     const request = this._friendRequestRepo.create()
     request.from = user
     request.to = friend
+    request.status = 'pending'
 
     await this._friendRequestRepo.save(request)
-    this._logService.user.addFriend(user.username, friend.username)
+    await this._logService.user.addFriend(user.username, friend.username)
   }
 
   public async removeFriend(): Promise<void> {}
